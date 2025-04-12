@@ -1,0 +1,1 @@
+SELECT * from masters.master_user limit 10

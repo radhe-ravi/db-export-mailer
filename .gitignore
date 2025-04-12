@@ -1,0 +1,26 @@
+# Credentials / config
+.env
+config/config.env
+
+# Exported data
+*.zip
+csv_exports_*/
+
+# Logs
+logs/
+*.log
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+
+# Bash history (if any)
+.bash_history
+
+# Dependency check files (if added)
+*.bak
+*.swp
+*.swo
+
+logs/
+*.log
