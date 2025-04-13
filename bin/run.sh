@@ -7,7 +7,6 @@ BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 source "$BASE_DIR/config/.env"
 source "$BASE_DIR/lib/logging.sh"
 source "$BASE_DIR/lib/db_export.sh"
-source "$BASE_DIR/lib/s3_upload.sh"
 source "$BASE_DIR/lib/notify.sh"
 
 export PGPASSWORD="$DB_PASSWORD"
@@ -37,13 +36,10 @@ else
   exit 1
 fi
 
-log_info "Uploading to S3"
-URL=$(upload_and_presign "$ZIP_PATH" "$ZIP_NAME")
-
 log_info "Sending email"
-send_email "$CURRENT_DATE" "$URL"
+send_email "$CURRENT_DATE" "$ZIP_PATH"
 
 log_info "Cleaning up"
 rm -rf "$TMP_DIR" "$ZIP_PATH"
 
-log_info "✅ Done. Download link: $URL"
+log_info "Done. The exported file is available at $ZIP_PATH"

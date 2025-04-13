@@ -1,70 +1,23 @@
 send_email() {
   local CURRENT_DATE="$1"
-  local URL="$2"
+  local FILE_PATH="$2"
 
-  # Define the email body content
-  local EMAIL_HTML="<p>Hello,</p><p>Attached is the ZIP file containing all master exports:</p><p><a href='${URL}'>Download Export ZIP</a></p>"
-  local EMAIL_TEXT="Hello,\n\nAttached is the ZIP file containing all master exports:\n${URL}"
+  log_info "Preparing to send email with attachment: $FILE_PATH"
 
-  # Prepare the JSON payload
-  local EMAIL_PAYLOAD=$(cat <<EOF
-{
-  "clientId": "local",
-  "inputs": {
-    "notificationType": "email",
-    "notificationParameters": [
-      { "key": "notificationMessageType", "value": "TRANS" },
-      { "key": "subject", "value": "Master Data Export - ${CURRENT_DATE}" }
-    ],
-    "notificationListParameters": [
-      {
-        "fromEmailAddress": {
-          "key": "from",
-          "value": [
-            { "emailId": "${FROM_EMAIL}", "name": "Effigo" }
-          ]
-        },
-        "emailBody": [
-          {
-            "key": "content",
-            "value": [
-              { "type": "text/plain", "value": "${EMAIL_TEXT}" },
-              { "type": "text/html", "value": "${EMAIL_HTML}" }
-            ]
-          }
-        ],
-        "recipients": [
-          {
-            "key": "to",
-            "value": [
-              { "emailId": "${TO_EMAIL}", "name": "IT" }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-EOF
-  )
+  RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/mail_response.txt \
+    -X POST ${API_URL} \
+    -F "to=${TO_EMAIL}" \
+    -F "subject=Master Data Export - ${CURRENT_DATE}" \
+    -F "body=Hello,\n\nPlease find attached the ZIP file containing the master data export for ${CURRENT_DATE}." \
+    -F "attachment=@${FILE_PATH}")
 
-  # Log the payload to help with debugging
-  log_info "Sending email with the following payload: $EMAIL_PAYLOAD"
+  HTTP_STATUS=$RESPONSE
+  RESPONSE_BODY=$(cat /tmp/mail_response.txt)
 
-  # Send the email request via API
-  local RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/mail_response.txt \
-    --location "$API_URL" \
-    --header 'Content-Type: application/json' \
-    --data-raw "$EMAIL_PAYLOAD")
-
-  # Log the complete response for debugging purposes
-  log_info "API response: $(cat /tmp/mail_response.txt)"
-
-  # Check the response code and handle errors
-  if [[ "$RESPONSE" == "200" ]]; then
-    log_info "✅ Email sent successfully to ${TO_EMAIL}."
+  if [[ "$HTTP_STATUS" == "200" ]]; then
+    log_info "✅ Email sent successfully."
   else
-    log_error "❌ Failed to send email. Status code: $RESPONSE. Response: $(cat /tmp/mail_response.txt)"
+    log_error "❌ Failed to send email. Status: $HTTP_STATUS. Response: $RESPONSE_BODY"
     exit 1
   fi
 }
