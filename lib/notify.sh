@@ -15,9 +15,9 @@ send_email() {
   RESPONSE_BODY=$(cat /tmp/mail_response.txt)
 
   if [[ "$HTTP_STATUS" == "200" ]]; then
-    log_info "✅ Email sent successfully."
+    log_info "Email sent successfully."
   else
-    log_error "❌ Failed to send email. Status: $HTTP_STATUS. Response: $RESPONSE_BODY"
+    log_error "Failed to send email. Status: $HTTP_STATUS. Response: $RESPONSE_BODY"
     exit 1
   fi
 }

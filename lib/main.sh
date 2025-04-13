@@ -1,9 +1,9 @@
 #!/bin/bash
 
-source "$BASE_DIR/lib/db_export.sh"
-source "$BASE_DIR/lib/zip_utils.sh"
-source "$BASE_DIR/lib/notify.sh"
-source "$BASE_DIR/lib/cleanup.sh"
+# source "$BASE_DIR/lib/db_export.sh"
+# source "$BASE_DIR/lib/utils.sh"
+# source "$BASE_DIR/lib/notify.sh"
+source "$BASE_DIR/lib/init.sh"
 
 main() {
   local BASE_DIR="$1"
