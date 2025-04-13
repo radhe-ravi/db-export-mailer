@@ -1,5 +1,5 @@
 run:
-	bash bin/run.sh
+	bash run.sh
 
 clean:
 	rm -rf *.zip csv_exports_*
